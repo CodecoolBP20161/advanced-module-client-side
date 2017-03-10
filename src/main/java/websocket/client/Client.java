@@ -17,7 +17,7 @@ public class Client {
     public static void main(String[] args) {
         try {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            String uri = "ws://localhost:8080/advanced_module_banktech_war_exploded/websocket";
+            String uri = "ws://localhost:8080/simple_websocket_server_war_exploded/websocket";
             System.out.println("Connecting to " + uri);
             container.connectToServer(MyClientEndpoint.class, URI.create(uri));
             messageLatch.await(10, TimeUnit.SECONDS);
