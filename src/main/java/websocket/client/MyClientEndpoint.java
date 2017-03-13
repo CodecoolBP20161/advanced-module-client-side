@@ -1,39 +1,48 @@
 package websocket.client;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.TimeUnit;
 import javax.websocket.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ClientEndpoint(
         encoders = { MessageEncoder.class },
         decoders = { MessageDecoder.class }
 )
 public class MyClientEndpoint {
+    final Logger logger = LoggerFactory.getLogger(MyClientEndpoint.class);
 
     @OnOpen
     public void onOpen(Session session) {
-        System.out.println("Connected to endpoint: " + session.getBasicRemote());
-
+        logger.info("Connected to endpoint: " + session.getBasicRemote());
         try {
             Message response = new Message();
-            response.setParam1("Very first message from client");
+            response.setParam1("client0 message");
             response.setParam2("Param2");
-            System.out.println("Message to server: " + response.getParam1());
+            logger.info("TO server: " + response.getParam1());
             session.getBasicRemote().sendObject(response);
         } catch (IOException | EncodeException ex) {
-            Logger.getLogger(MyClientEndpoint.class.getName()).log(Level.SEVERE, null, ex);
+            logger.info(MyClientEndpoint.class.getName(), ex);
         }
     }
 
     @OnMessage
     public void message(Message message, Session session) throws IOException, EncodeException {
-        System.out.println(message.getParam1());
-        Message response = new Message();
-        response.setParam1("From client new message");
-        response.setParam2("Param2");
-        session.getBasicRemote().sendObject(response);
-        Client.messageLatch.countDown();
+        try {
+            for(int i=1; i<10; i++) {
+                logger.info("FROM server: " + message.getParam1());
+                Message response = new Message();
+                response.setParam1("client" + i + " message");
+                response.setParam2("Param2");
+                session.getBasicRemote().sendObject(response);
+                logger.info("TO server: " + response.getParam1());
+                TimeUnit.SECONDS.sleep(3);
+            }
+            Client.messageLatch.countDown();
+        } catch (EncodeException | InterruptedException | IOException ex) {
+            logger.info(MyClientEndpoint.class.getName(), ex);
+        }
     }
 
     @OnError

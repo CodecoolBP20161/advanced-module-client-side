@@ -1,5 +1,8 @@
 package websocket.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.websocket.DecodeException;
@@ -8,6 +11,7 @@ import javax.websocket.EndpointConfig;
 import java.io.StringReader;
 
 public class MessageDecoder implements Decoder.Text<Message> {
+    final Logger logger = LoggerFactory.getLogger(MessageDecoder.class);
 
     @Override
     public Message decode(String jsonMessage) throws DecodeException {
@@ -34,12 +38,12 @@ public class MessageDecoder implements Decoder.Text<Message> {
 
     @Override
     public void init(EndpointConfig ec) {
-        System.out.println("MessageDecoder -init method called");
+        logger.info("MessageDecoder -init method called");
     }
 
     @Override
     public void destroy() {
-        System.out.println("MessageDecoder - destroy method called");
+        logger.info("MessageDecoder - destroy method called");
     }
 
 }
