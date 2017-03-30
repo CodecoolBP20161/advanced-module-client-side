@@ -21,13 +21,15 @@ public class Client {
 
     final static CountDownLatch messageLatch = new CountDownLatch(1);
     final static Logger logger = LoggerFactory.getLogger(MyClientEndpoint.class);
+    final static String credentials = "userA:abc123";
+    final static String uri = "ws://192.168.161.94:8080/advanced_module_banktech_war_exploded/websocket";
 
 
 
     public static void main(String[] args) {
         ClientEndpointConfig.Configurator configurator = new ClientEndpointConfig.Configurator() {
             public void beforeRequest(Map<String, List<String>> headers) {
-                headers.put("Authorization", asList("Basic " + DatatypeConverter.printBase64Binary("userB:abc123".getBytes())));
+                headers.put("Authorization", asList("Basic " + DatatypeConverter.printBase64Binary(credentials.getBytes())));
             }
         };
 
@@ -35,7 +37,6 @@ public class Client {
                 .configurator(configurator)
                 .build();
         try {
-            String uri = "ws://192.168.161.94:8080/advanced_module_banktech_war_exploded/websocket";
             logger.info("Connecting to " + uri);
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(new MyClientEndpoint(), clientConfig,  URI.create(uri));
